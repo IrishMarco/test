@@ -1,0 +1,93 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Player : MonoBehaviour
+{
+    float horizontalInput;
+    float verticalInput;
+
+    float rotationalInput;
+    //bool leftSnapInput;
+    //bool rightSnapInput;
+
+    bool jumpInput;
+
+    bool sprintInput;
+    bool forceSpeed;
+
+    Rigidbody rig;
+    [SerializeField] Transform groundCheckTransform;
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        rig = GetComponent<Rigidbody>();
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        //Keyboard input: WASD + ZC
+        horizontalInput = Input.GetAxisRaw("Horizontal");
+        verticalInput = Input.GetAxisRaw("Vertical");
+        rotationalInput = Input.GetAxisRaw("Rotational");
+
+        //Keyboard input: Space
+        //groundCheck to prohibit air jumps
+        if (Input.GetKeyDown(KeyCode.Space) && Physics.OverlapSphere(groundCheckTransform.position, .001f).Length != 1)
+        {
+            jumpInput = true;
+        }
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            sprintInput = true;
+        }
+
+        //Interaction input detection
+        if (Input.GetKey(KeyCode.R))
+        {
+            //interact.gui;
+        }
+
+        //Flourish input detection
+        if (Input.GetKey(KeyCode.R))
+        {
+            //rig.animate(flourish);
+        }
+
+        //forceSpeed state
+        if (Input.GetKey(KeyCode.Alpha4))
+        {
+            //WaitForSeconds;
+            forceSpeed = true;
+        }
+    }
+
+    //FixedUpdate is called once every physics update
+    void FixedUpdate()
+    {
+        //Movement and speed functions
+        float speed = 2;
+        if(sprintInput)
+        {
+            speed *= 2;
+
+            if (forceSpeed)
+            {
+                speed *= 2;
+            }
+            sprintInput = false;
+        }
+        int rotationalSpeed = 180;
+        transform.Rotate(rotationalSpeed * Time.fixedDeltaTime * new Vector3(0, rotationalInput, 0));
+        transform.Translate(speed * Time.fixedDeltaTime * new Vector3(horizontalInput, rig.velocity.y, verticalInput).normalized);
+
+        //Jump function
+        if (jumpInput)
+        {
+            jumpInput = false;
+            rig.velocity = new Vector3(rig.velocity.x, 3.4f, rig.velocity.z);
+        }
+    }
+}
